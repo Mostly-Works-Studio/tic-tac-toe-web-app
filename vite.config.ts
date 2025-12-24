@@ -22,7 +22,7 @@ export default defineConfig({
         description: 'A modern Tic-Tac-Toe game',
         theme_color: '#0B1622',
         background_color: '#0B1622',
-        display: 'standalone',
+        display: 'fullscreen',
         start_url: '.',
         orientation: 'portrait',
         icons: [
