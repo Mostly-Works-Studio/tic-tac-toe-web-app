@@ -1,4 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+
+const STORAGE_KEY = "tic-tac-toe-state";
 
 const WINNING_COMBINATIONS = [
   [0, 1, 2], // top row
@@ -22,17 +24,54 @@ interface GameState {
   draws: number;
 }
 
+const isValidGameState = (state: any): state is GameState => {
+  if (!state || typeof state !== "object") return false;
+
+  const validBoard = Array.isArray(state.board) &&
+    state.board.length === 9 &&
+    state.board.every((cell: any) => cell === null || cell === "X" || cell === "O");
+
+  const validPlayers = (state.currentPlayer === "X" || state.currentPlayer === "O") &&
+    (state.winner === null || state.winner === "X" || state.winner === "O");
+
+  const validStats = typeof state.xWins === "number" &&
+    typeof state.oWins === "number" &&
+    typeof state.draws === "number" &&
+    typeof state.isDraw === "boolean" &&
+    Array.isArray(state.winningCells);
+
+  return validBoard && validPlayers && validStats;
+};
+
 export const useTicTacToe = () => {
-  const [gameState, setGameState] = useState<GameState>({
-    board: Array(9).fill(null),
-    currentPlayer: "X",
-    winner: null,
-    winningCells: [],
-    isDraw: false,
-    xWins: 0,
-    oWins: 0,
-    draws: 0,
+  const [gameState, setGameState] = useState<GameState>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (isValidGameState(parsed)) {
+          return parsed;
+        }
+        console.warn("Saved game state is invalid, resetting...");
+      } catch (e) {
+        console.error("Failed to parse saved game state:", e);
+      }
+    }
+    return {
+      board: Array(9).fill(null),
+      currentPlayer: "X",
+      winner: null,
+      winningCells: [],
+      isDraw: false,
+      xWins: 0,
+      oWins: 0,
+      draws: 0,
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+  }, [gameState]);
 
   const [isResetting, setIsResetting] = useState(false);
   const [resetType, setResetType] = useState<"game" | "all" | "draw" | null>(null);
