@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 15%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 15%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 16 100% 66%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 183 74% 55%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 222 30% 20%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 270 70% 60%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 222 30% 25%;
+    --input: 222 30% 25%;
+    --ring: 16 100% 66%;
+
+    --radius: 1rem;
+
+    /* Game-specific tokens */
+    --x-color: 16 100% 66%;
+    --o-color: 183 74% 55%;
+    --cell-bg: 222 47% 18%;
+    --cell-hover: 222 47% 22%;
+    --glow-x: 0 0 30px hsl(16 100% 66% / 0.5);
+    --glow-o: 0 0 30px hsl(183 74% 55% / 0.5);
+    --win-glow: 0 0 40px hsl(48 100% 60% / 0.6);
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 15%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 15%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 16 100% 66%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 183 74% 55%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 222 30% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 270 70% 60%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 30% 25%;
+    --input: 222 30% 25%;
+    --ring: 16 100% 66%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-outfit;
+  }
+}
+
+@layer utilities {
+  .text-x {
+    color: hsl(var(--x-color));
+  }
+  
+  .text-o {
+    color: hsl(var(--o-color));
+  }
+  
+  .bg-cell {
+    background-color: hsl(var(--cell-bg));
+  }
+  
+  .bg-cell-hover {
+    background-color: hsl(var(--cell-hover));
+  }
+  
+  .glow-x {
+    box-shadow: var(--glow-x);
+  }
+  
+  .glow-o {
+    box-shadow: var(--glow-o);
+  }
+  
+  .glow-win {
+    box-shadow: var(--win-glow);
+  }
+}
+
+@layer components {
+  .game-cell {
+    @apply bg-cell rounded-2xl flex items-center justify-center text-6xl font-extrabold 
+           transition-all duration-200 ease-out cursor-pointer
+           hover:bg-cell-hover active:scale-95;
+  }
+  
+  .game-cell-x {
+    @apply text-x glow-x;
+  }
+  
+  .game-cell-o {
+    @apply text-o glow-o;
+  }
+  
+  .win-cell {
+    @apply glow-win scale-105;
+  }
+}
+
+/* Animations */
+@keyframes pop-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-pop-in {
+  animation: pop-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
