@@ -1,9 +1,10 @@
-import { RotateCcw, Trash2 } from "lucide-react";
+import { RotateCcw, Trash2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GameBoard from "@/components/GameBoard";
 import ScoreBoard from "@/components/ScoreBoard";
 import GameStatus from "@/components/GameStatus";
 import { useTicTacToe } from "@/hooks/useTicTacToe";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 const Index = () => {
   const {
@@ -20,6 +21,8 @@ const Index = () => {
     resetAll,
     gameOver,
   } = useTicTacToe();
+
+  const { deferredPrompt, install } = usePWAInstall();
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center p-4 gap-6">
@@ -67,6 +70,14 @@ const Index = () => {
           Reset All
         </Button>
       </div>
+
+      {/* Manual Install Button */}
+      {deferredPrompt && (
+        <Button onClick={install} className="gap-2 shadow-lg animate-pulse-glow" variant="default">
+          <Download className="w-4 h-4" />
+          Install App
+        </Button>
+      )}
     </div>
   );
 };

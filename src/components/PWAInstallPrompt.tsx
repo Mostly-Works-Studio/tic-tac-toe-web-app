@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Share, PlusSquare } from "lucide-react";
+import { Share, PlusSquare, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Drawer,
@@ -9,78 +9,70 @@ import {
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
-    DrawerTrigger,
 } from "@/components/ui/drawer";
-import { toast } from "sonner";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 export const PWAInstallPrompt = () => {
-    const [isIOS, setIsIOS] = useState(false);
-    const [isStandalone, setIsStandalone] = useState(false);
-    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-    const [isOpen, setIsOpen] = useState(false);
+    const { deferredPrompt, install, isStandalone, isIOS } = usePWAInstall();
+    const [showIOSDrawer, setShowIOSDrawer] = useState(false);
+    const [showInstallDialog, setShowInstallDialog] = useState(false);
 
     useEffect(() => {
-        // Check if running in standalone mode
-        const isStandaloneMode =
-            window.matchMedia("(display-mode: standalone)").matches ||
-            window.matchMedia("(display-mode: fullscreen)").matches ||
-            (window.navigator as any).standalone === true;
-
-        setIsStandalone(isStandaloneMode);
-
-        // Check if device is iOS
-        const userAgent = window.navigator.userAgent.toLowerCase();
-        const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
-        setIsIOS(isIosDevice);
-
-        // Listen for beforeinstallprompt event (Android/Desktop)
-        const handleBeforeInstallPrompt = (e: Event) => {
-            e.preventDefault();
-            setDeferredPrompt(e);
-            // Show toast or button for Android
-            if (!isStandaloneMode) {
-                toast("Install App", {
-                    description: "Install Tic Tac Toe for a better experience!",
-                    action: {
-                        label: "Install",
-                        onClick: () => handleInstallClick(),
-                    },
-                    duration: 10000,
-                });
-            }
-        };
-
-        window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+        // Show dialog for Android/Desktop if not installed and prompt is available
+        if (deferredPrompt && !isStandalone) {
+            setShowInstallDialog(true);
+        }
 
         // Show iOS drawer if on iOS and not standalone
-        if (isIosDevice && !isStandaloneMode) {
+        if (isIOS && !isStandalone) {
             // Small delay to not be intrusive immediately
-            const timer = setTimeout(() => setIsOpen(true), 3000);
+            const timer = setTimeout(() => setShowIOSDrawer(true), 3000);
             return () => clearTimeout(timer);
         }
-
-        return () => {
-            window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-        };
-    }, []);
-
-    const handleInstallClick = async () => {
-        if (!deferredPrompt) return;
-
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-
-        if (outcome === "accepted") {
-            setDeferredPrompt(null);
-        }
-    };
+    }, [deferredPrompt, isStandalone, isIOS]);
 
     if (isStandalone) return null;
 
     return (
         <>
+            {/* Android/Desktop Install Dialog */}
+            <Dialog open={showInstallDialog} onOpenChange={setShowInstallDialog}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Install Tic Tac Toe</DialogTitle>
+                        <DialogDescription>
+                            Install the app for a better full-screen experience and offline access.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex items-center justify-center py-4">
+                        <div className="bg-muted p-4 rounded-full">
+                            <Download className="w-8 h-8 text-primary" />
+                        </div>
+                    </div>
+                    <DialogFooter className="sm:justify-start">
+                        <Button type="button" variant="secondary" onClick={() => setShowInstallDialog(false)}>
+                            Maybe Later
+                        </Button>
+                        <Button type="button" onClick={() => {
+                            install();
+                            setShowInstallDialog(false);
+                        }}>
+                            Install App
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             {/* iOS Install Instructions Drawer */}
-            <Drawer open={isOpen} onOpenChange={setIsOpen}>
+            <Drawer open={showIOSDrawer} onOpenChange={setShowIOSDrawer}>
                 <DrawerContent>
                     <DrawerHeader>
                         <DrawerTitle>Install Tic Tac Toe</DrawerTitle>
