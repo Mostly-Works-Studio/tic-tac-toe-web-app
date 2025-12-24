@@ -39,6 +39,7 @@ const Index = () => {
         oWins={oWins}
         draws={draws}
         currentPlayer={currentPlayer}
+        isDraw={isDraw}
       />
 
       {/* Game Status */}

@@ -6,22 +6,28 @@ interface ScoreBoardProps {
   oWins: number;
   draws: number;
   currentPlayer: "X" | "O";
+  isDraw?: boolean;
 }
 
-const ScoreBoard = ({ xWins, oWins, draws, currentPlayer }: ScoreBoardProps) => {
+const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw }: ScoreBoardProps) => {
   return (
     <div className="flex justify-center gap-4 w-full max-w-sm">
       <div
         className={cn(
           "flex-1 bg-card rounded-2xl p-4 text-center transition-all duration-300 flex flex-col items-center justify-center gap-2",
-          currentPlayer === "X" && "ring-2 ring-primary glow-x"
+          currentPlayer === "X" && !isDraw && "glow-x"
         )}
       >
         <XIcon className="w-8 h-8 text-x" />
         <div className="text-foreground text-2xl font-bold">{xWins}</div>
       </div>
 
-      <div className="flex-1 bg-card rounded-2xl p-4 text-center flex flex-col items-center justify-center gap-2">
+      <div
+        className={cn(
+          "flex-1 bg-card rounded-2xl p-4 text-center transition-all duration-300 flex flex-col items-center justify-center gap-2",
+          isDraw && "shadow-[0_0_35px_hsl(215_20%_65%_/_0.6)]"
+        )}
+      >
         <div className="text-muted-foreground text-xl font-extrabold pt-2">DRAW</div>
         <div className="text-foreground text-2xl font-bold">{draws}</div>
       </div>
@@ -29,7 +35,7 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer }: ScoreBoardProps) => 
       <div
         className={cn(
           "flex-1 bg-card rounded-2xl p-4 text-center transition-all duration-300 flex flex-col items-center justify-center gap-2",
-          currentPlayer === "O" && "ring-2 ring-secondary glow-o"
+          currentPlayer === "O" && !isDraw && "glow-o"
         )}
       >
         <OIcon className="w-8 h-8 text-o" />

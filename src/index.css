@@ -47,9 +47,9 @@
     /* #f96170 */
     --cell-bg: 211 51% 16%;
     --cell-hover: 211 51% 20%;
-    --glow-x: 0 0 30px hsl(189 100% 51% / 0.5);
-    --glow-o: 0 0 30px hsl(354 92% 68% / 0.5);
-    --win-glow: 0 0 40px hsl(48 100% 60% / 0.6);
+    --glow-x: 0 0 35px hsl(189 100% 51% / 0.8);
+    --glow-o: 0 0 35px hsl(354 92% 68% / 0.8);
+    --win-glow: 0 0 50px hsl(48 100% 60% / 0.9);
   }
 
   .dark {
@@ -120,12 +120,20 @@
     @apply bg-cell rounded-2xl flex items-center justify-center text-6xl font-extrabold transition-all duration-200 ease-out cursor-pointer hover:bg-cell-hover active:scale-95;
   }
 
+  .game-cell:disabled {
+    @apply cursor-default hover:bg-cell active:scale-100;
+  }
+
   .game-cell-x {
     @apply text-x glow-x;
   }
 
   .game-cell-o {
     @apply text-o glow-o;
+  }
+
+  .game-cell:disabled.win-cell {
+    @apply active:scale-105;
   }
 
   .win-cell {
