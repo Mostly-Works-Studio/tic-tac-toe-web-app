@@ -25,7 +25,7 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw }: ScoreBoardPr
       <AnimatedScoreCard
         triggerValue={draws}
         active={isDraw}
-        activeClassName="shadow-[0_0_35px_hsl(215_20%_65%_/_0.6)]"
+        activeClassName="shadow-[0_0_35px_hsl(215_25%_65%_/_0.6)]"
       >
         <div className="text-muted-foreground text-xl font-extrabold pt-2">DRAW</div>
         <div className="text-foreground text-2xl font-bold">{draws}</div>

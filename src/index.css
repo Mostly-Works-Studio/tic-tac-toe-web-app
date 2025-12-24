@@ -17,16 +17,16 @@
     --popover: 211 51% 13%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 189 100% 51%;
-    /* #04D9FF (Cyan) */
+    --primary: 188 86% 53%;
+    /* #22D3EE (Cyan) */
     --primary-foreground: 222 47% 11%;
 
-    --secondary: 354 92% 68%;
-    /* #f96170 (Salmon Pink) */
+    --secondary: 351 95% 71%;
+    /* #FB7185 (Rose) */
     --secondary-foreground: 222 47% 11%;
 
     --muted: 211 30% 20%;
-    --muted-foreground: 215 20% 65%;
+    --muted-foreground: 215 25% 65%;
 
     --accent: 270 70% 60%;
     --accent-foreground: 210 40% 98%;
@@ -36,19 +36,19 @@
 
     --border: 211 30% 25%;
     --input: 211 30% 25%;
-    --ring: 189 100% 51%;
+    --ring: 188 86% 53%;
 
     --radius: 1rem;
 
     /* Game-specific tokens */
-    --x-color: 189 100% 51%;
-    /* #04D9FF */
-    --o-color: 354 92% 68%;
-    /* #f96170 */
+    --x-color: 188 86% 53%;
+    /* #22D3EE */
+    --o-color: 351 95% 71%;
+    /* #FB7185 */
     --cell-bg: 211 51% 16%;
     --cell-hover: 211 51% 20%;
-    --glow-x: 0 0 35px hsl(189 100% 51% / 0.8);
-    --glow-o: 0 0 35px hsl(354 92% 68% / 0.8);
+    --glow-x: 0 0 35px hsl(188 86% 53% / 0.8);
+    --glow-o: 0 0 35px hsl(351 95% 71% / 0.8);
     --win-glow: 0 0 50px hsl(48 100% 60% / 0.9);
   }
 

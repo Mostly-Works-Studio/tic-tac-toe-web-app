@@ -67,11 +67,11 @@ const Index = () => {
       {/* Action Buttons */}
       <div className="flex gap-3">
         <Button variant="game" size="lg" onClick={resetGame} disabled={isResetting}>
-          <RotateCcw className={cn("w-5 h-5", isResetting && "animate-spin")} />
+          <RotateCcw className={cn("w-5 h-5", isResetting && "animate-spin")} strokeWidth={3} />
           New Game
         </Button>
         <Button variant="outline" size="lg" onClick={resetAll} disabled={isResetting}>
-          <Trash2 className="w-5 h-5" />
+          <Trash2 className="w-5 h-5" strokeWidth={3} />
           Reset All
         </Button>
       </div>
