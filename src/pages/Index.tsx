@@ -56,6 +56,7 @@ const Index = () => {
           winningCells={winningCells}
           gameOver={gameOver}
           isDraw={isDraw}
+          currentPlayer={currentPlayer}
         />
       </div>
 

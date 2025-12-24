@@ -7,11 +7,12 @@ interface GameBoardProps {
   winningCells: number[];
   gameOver: boolean;
   isDraw: boolean;
+  currentPlayer: "X" | "O";
 }
 
-const GameBoard = ({ board, onCellClick, winningCells, gameOver, isDraw }: GameBoardProps) => {
+const GameBoard = ({ board, onCellClick, winningCells, gameOver, isDraw, currentPlayer }: GameBoardProps) => {
   return (
-    <div 
+    <div
       className={cn(
         "grid grid-cols-3 gap-3 p-4 bg-card rounded-3xl",
         isDraw && "animate-shake"
@@ -24,6 +25,7 @@ const GameBoard = ({ board, onCellClick, winningCells, gameOver, isDraw }: GameB
           onClick={() => onCellClick(index)}
           isWinning={winningCells.includes(index)}
           disabled={gameOver}
+          currentPlayer={currentPlayer}
         />
       ))}
     </div>
