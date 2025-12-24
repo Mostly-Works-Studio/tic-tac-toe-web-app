@@ -60,4 +60,4 @@ The app will be available at `http://localhost:8080`
 
 ## License
 
-This project is private and not licensed for public use.
+This project is private and not licensed for public use
