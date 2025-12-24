@@ -123,14 +123,20 @@ export const useTicTacToe = () => {
   }, [checkWinner, checkDraw]);
 
   const resetGame = useCallback(() => {
-    setGameState((prev) => ({
-      ...prev,
-      board: Array(9).fill(null),
-      currentPlayer: "X",
-      winner: null,
-      winningCells: [],
-      isDraw: false,
-    }));
+    setGameState((prev) => {
+      // Check if game is in progress (moves made, but no result yet)
+      const isGameInProgress = prev.board.some((cell) => cell !== null) && !prev.winner && !prev.isDraw;
+
+      return {
+        ...prev,
+        board: Array(9).fill(null),
+        currentPlayer: "X",
+        winner: null,
+        winningCells: [],
+        isDraw: false,
+        draws: isGameInProgress ? prev.draws + 1 : prev.draws,
+      };
+    });
   }, []);
 
   const resetAll = useCallback(() => {
