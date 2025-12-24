@@ -44,6 +44,42 @@ export const useTicTacToe = () => {
     return null;
   }, []);
 
+  const checkDraw = useCallback((board: (string | null)[], currentPlayer: "X" | "O") => {
+    // Helper function to check if a win is possible from the current state
+    const canWin = (currentBoard: (string | null)[], player: "X" | "O"): boolean => {
+      const emptyIndices = currentBoard.map((c, i) => c === null ? i : -1).filter(i => i !== -1);
+
+      if (emptyIndices.length === 0) return false;
+
+      // Try every empty cell
+      for (const index of emptyIndices) {
+        const nextBoard = [...currentBoard];
+        nextBoard[index] = player;
+
+        // Check if this move wins
+        let won = false;
+        for (const combo of WINNING_COMBINATIONS) {
+          const [a, b, c] = combo;
+          if (nextBoard[a] && nextBoard[a] === nextBoard[b] && nextBoard[a] === nextBoard[c]) {
+            won = true;
+            break;
+          }
+        }
+
+        if (won) return true;
+
+        // If not, recurse
+        const nextPlayer = player === "X" ? "O" : "X";
+        if (canWin(nextBoard, nextPlayer)) return true;
+      }
+
+      return false;
+    };
+
+    // If no one can win from this state, it's a draw
+    return !canWin(board, currentPlayer);
+  }, []);
+
   const handleCellClick = useCallback((index: number) => {
     setGameState((prev) => {
       if (prev.board[index] || prev.winner || prev.isDraw) {
@@ -54,7 +90,7 @@ export const useTicTacToe = () => {
       newBoard[index] = prev.currentPlayer;
 
       const result = checkWinner(newBoard);
-      
+
       if (result) {
         return {
           ...prev,
@@ -66,8 +102,9 @@ export const useTicTacToe = () => {
         };
       }
 
-      const isDraw = newBoard.every((cell) => cell !== null);
-      
+      const nextPlayer = prev.currentPlayer === "X" ? "O" : "X";
+      const isDraw = checkDraw(newBoard, nextPlayer);
+
       if (isDraw) {
         return {
           ...prev,
@@ -83,7 +120,7 @@ export const useTicTacToe = () => {
         currentPlayer: prev.currentPlayer === "X" ? "O" : "X",
       };
     });
-  }, [checkWinner]);
+  }, [checkWinner, checkDraw]);
 
   const resetGame = useCallback(() => {
     setGameState((prev) => ({
