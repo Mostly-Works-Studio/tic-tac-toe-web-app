@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { XIcon, OIcon } from "./Icons";
 
 interface GameStatusProps {
   winner: "X" | "O" | null;
@@ -9,14 +10,10 @@ interface GameStatusProps {
 const GameStatus = ({ winner, isDraw, currentPlayer }: GameStatusProps) => {
   if (winner) {
     return (
-      <div className="text-center animate-float">
-        <span 
-          className={cn(
-            "text-4xl font-extrabold",
-            winner === "X" ? "text-x" : "text-o"
-          )}
-        >
-          {winner} Wins! 🎉
+      <div className="text-center animate-float flex items-center justify-center gap-3">
+        {winner === "X" ? <XIcon className="w-10 h-10 text-x" /> : <OIcon className="w-10 h-10 text-o" />}
+        <span className="text-4xl font-extrabold text-foreground">
+          Wins! 🎉
         </span>
       </div>
     );
@@ -33,15 +30,15 @@ const GameStatus = ({ winner, isDraw, currentPlayer }: GameStatusProps) => {
   }
 
   return (
-    <div className="text-center">
+    <div className="text-center flex items-center justify-center gap-2">
       <span className="text-muted-foreground text-lg">Turn: </span>
-      <span 
+      <span
         className={cn(
-          "text-3xl font-extrabold ml-2",
+          "ml-2",
           currentPlayer === "X" ? "text-x" : "text-o"
         )}
       >
-        {currentPlayer}
+        {currentPlayer === "X" ? <XIcon className="w-8 h-8" /> : <OIcon className="w-8 h-8" />}
       </span>
     </div>
   );

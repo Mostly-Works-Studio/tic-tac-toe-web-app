@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { XIcon, OIcon } from "./Icons";
 
 interface GameCellProps {
   value: "X" | "O" | null;
@@ -20,9 +21,8 @@ const GameCell = ({ value, onClick, isWinning, disabled }: GameCellProps) => {
         !value && !disabled && "hover:scale-[1.02]"
       )}
     >
-      {value && (
-        <span className="animate-pop-in">{value}</span>
-      )}
+      {value === "X" && <XIcon className="w-12 h-12 sm:w-16 sm:h-16 animate-pop-in" />}
+      {value === "O" && <OIcon className="w-12 h-12 sm:w-16 sm:h-16 animate-pop-in" />}
     </button>
   );
 };
