@@ -33,7 +33,7 @@ This project is built with:
 
 ```sh
 # Clone the repository
-git clone <YOUR_GIT_URL>
+git clone git@github.com:Mostly-Works-Studio/tic-tac-toe-web-app.git
 
 # Navigate to the project directory
 cd tic-tac-toe-fun-main
