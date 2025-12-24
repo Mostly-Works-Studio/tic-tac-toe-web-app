@@ -18,12 +18,24 @@ const GameCell = ({ value, onClick, isWinning, disabled, currentPlayer }: GameCe
         "game-cell aspect-square group relative",
         value === "X" && "game-cell-x",
         value === "O" && "game-cell-o",
-        isWinning && "win-cell animate-pulse-glow",
+        isWinning && "win-cell",
         !value && !disabled && "hover:scale-[1.02]"
       )}
     >
-      {value === "X" && <XIcon className="w-12 h-12 sm:w-16 sm:h-16 animate-pop-in" />}
-      {value === "O" && <OIcon className="w-12 h-12 sm:w-16 sm:h-16 animate-pop-in" />}
+      {value === "X" && (
+        <XIcon
+          className={cn(
+            "w-12 h-12 sm:w-16 sm:h-16 animate-pop-in"
+          )}
+        />
+      )}
+      {value === "O" && (
+        <OIcon
+          className={cn(
+            "w-12 h-12 sm:w-16 sm:h-16 animate-pop-in"
+          )}
+        />
+      )}
 
       {/* Hover Hint */}
       {!value && !disabled && currentPlayer === "X" && (

@@ -5,6 +5,7 @@ import ScoreBoard from "@/components/ScoreBoard";
 import GameStatus from "@/components/GameStatus";
 import { useTicTacToe } from "@/hooks/useTicTacToe";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const {
@@ -20,6 +21,7 @@ const Index = () => {
     resetGame,
     resetAll,
     gameOver,
+    isResetting,
   } = useTicTacToe();
 
   const { deferredPrompt, install } = usePWAInstall();
@@ -55,19 +57,20 @@ const Index = () => {
           board={board}
           onCellClick={handleCellClick}
           winningCells={winningCells}
-          gameOver={gameOver}
+          gameOver={gameOver || isResetting}
           isDraw={isDraw}
           currentPlayer={currentPlayer}
+          winner={winner}
         />
       </div>
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <Button variant="game" size="lg" onClick={resetGame}>
-          <RotateCcw className="w-5 h-5" />
+        <Button variant="game" size="lg" onClick={resetGame} disabled={isResetting}>
+          <RotateCcw className={cn("w-5 h-5", isResetting && "animate-spin")} />
           New Game
         </Button>
-        <Button variant="outline" size="lg" onClick={resetAll}>
+        <Button variant="outline" size="lg" onClick={resetAll} disabled={isResetting}>
           <Trash2 className="w-5 h-5" />
           Reset All
         </Button>
@@ -75,7 +78,7 @@ const Index = () => {
 
       {/* Manual Install Button */}
       {deferredPrompt && (
-        <Button onClick={install} className="gap-2 shadow-lg animate-pulse-glow" variant="default">
+        <Button onClick={install} className="gap-2 shadow-lg animate-pulse-glow" variant="default" disabled={isResetting}>
           <Download className="w-4 h-4" />
           Install App
         </Button>

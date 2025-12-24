@@ -47,16 +47,16 @@ const AnimatedScoreCard = ({
             active && activeClassName
         )}>
             {animating ? (
-                <>
+                <div className="relative flex flex-col items-center justify-center">
                     {/* Old Content - Sliding Out */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 animate-slide-out-up p-4">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 animate-slide-out-up">
                         {displayChildren}
                     </div>
-                    {/* New Content - Sliding In */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 animate-slide-in-up p-4">
+                    {/* New Content - Sliding In (In Flow) */}
+                    <div className="flex flex-col items-center justify-center gap-2 animate-slide-in-up">
                         {children}
                     </div>
-                </>
+                </div>
             ) : (
                 <div className="flex flex-col items-center justify-center gap-2">
                     {children}

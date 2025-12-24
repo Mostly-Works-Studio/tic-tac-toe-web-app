@@ -34,6 +34,8 @@ export const useTicTacToe = () => {
     draws: 0,
   });
 
+  const [isResetting, setIsResetting] = useState(false);
+
   const checkWinner = useCallback((board: (string | null)[]) => {
     for (const combo of WINNING_COMBINATIONS) {
       const [a, b, c] = combo;
@@ -81,6 +83,7 @@ export const useTicTacToe = () => {
   }, []);
 
   const handleCellClick = useCallback((index: number) => {
+    if (isResetting) return;
     setGameState((prev) => {
       if (prev.board[index] || prev.winner || prev.isDraw) {
         return prev;
@@ -120,43 +123,73 @@ export const useTicTacToe = () => {
         currentPlayer: prev.currentPlayer === "X" ? "O" : "X",
       };
     });
-  }, [checkWinner, checkDraw]);
+  }, [checkWinner, checkDraw, isResetting]);
 
-  const resetGame = useCallback(() => {
-    setGameState((prev) => {
-      // Check if game is in progress (moves made, but no result yet)
-      const isGameInProgress = prev.board.some((cell) => cell !== null) && !prev.winner && !prev.isDraw;
+  const clearBoardStaggered = useCallback(async (resetScores: boolean) => {
+    setIsResetting(true);
 
-      return {
-        ...prev,
-        board: Array(9).fill(null),
-        currentPlayer: "X",
-        winner: null,
-        winningCells: [],
-        isDraw: false,
-        draws: isGameInProgress ? prev.draws + 1 : prev.draws,
-      };
-    });
-  }, []);
+    // Update scores immediately if it's a normal reset (abandoned game)
+    if (!resetScores) {
+      setGameState(prev => {
+        const isGameInProgress = prev.board.some((cell) => cell !== null) && !prev.winner && !prev.isDraw;
+        return {
+          ...prev,
+          draws: isGameInProgress ? prev.draws + 1 : prev.draws,
+        };
+      });
+    }
 
-  const resetAll = useCallback(() => {
-    setGameState({
-      board: Array(9).fill(null),
+    const boardResetPromise = (async () => {
+      for (let i = 0; i < 9; i++) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+        setGameState(prev => {
+          const newBoard = [...prev.board];
+          newBoard[i] = null;
+          return { ...prev, board: newBoard };
+        });
+      }
+    })();
+
+    const scoresResetPromise = (async () => {
+      if (resetScores) {
+        // Wait a bit before starting score reset to sync better with board clearing
+        await new Promise(resolve => setTimeout(resolve, 100));
+        setGameState(prev => ({ ...prev, xWins: 0 }));
+        await new Promise(resolve => setTimeout(resolve, 150));
+        setGameState(prev => ({ ...prev, draws: 0 }));
+        await new Promise(resolve => setTimeout(resolve, 150));
+        setGameState(prev => ({ ...prev, oWins: 0 }));
+      }
+    })();
+
+    await Promise.all([boardResetPromise, scoresResetPromise]);
+
+    // Final reset of game state
+    setGameState(prev => ({
+      ...prev,
       currentPlayer: "X",
       winner: null,
       winningCells: [],
       isDraw: false,
-      xWins: 0,
-      oWins: 0,
-      draws: 0,
-    });
+    }));
+
+    setIsResetting(false);
   }, []);
+
+  const resetGame = useCallback(() => {
+    clearBoardStaggered(false);
+  }, [clearBoardStaggered]);
+
+  const resetAll = useCallback(() => {
+    clearBoardStaggered(true);
+  }, [clearBoardStaggered]);
 
   return {
     ...gameState,
     handleCellClick,
     resetGame,
     resetAll,
-    gameOver: gameState.winner !== null || gameState.isDraw,
+    isResetting,
+    gameOver: (gameState.winner !== null || gameState.isDraw) && !isResetting,
   };
 };
