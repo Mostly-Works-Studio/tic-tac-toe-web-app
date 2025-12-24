@@ -22,7 +22,7 @@ const Index = () => {
   } = useTicTacToe();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 gap-6">
+    <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center p-4 gap-6">
       {/* Title */}
       <h1 className="text-4xl font-extrabold tracking-tight">
         <span className="text-x">Tic</span>
