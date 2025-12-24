@@ -1,4 +1,4 @@
-import { RotateCcw, Trash2, Download } from "lucide-react";
+import { RotateCcw, Trash2, Download, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GameBoard from "@/components/GameBoard";
 import ScoreBoard from "@/components/ScoreBoard";
@@ -20,8 +20,11 @@ const Index = () => {
     handleCellClick,
     resetGame,
     resetAll,
+    declareDraw,
     gameOver,
     isResetting,
+    resetType,
+    wasGameOver,
   } = useTicTacToe();
 
   const { deferredPrompt, install } = usePWAInstall();
@@ -65,15 +68,29 @@ const Index = () => {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3">
-        <Button variant="game" size="lg" onClick={resetGame} disabled={isResetting}>
-          <RotateCcw className={cn("w-5 h-5", isResetting && "animate-spin")} strokeWidth={3} />
-          New Game
-        </Button>
-        <Button variant="outline" size="lg" onClick={resetAll} disabled={isResetting}>
-          <Trash2 className="w-5 h-5" strokeWidth={3} />
-          Reset All
-        </Button>
+      <div className="flex gap-3 h-14">
+        {(gameOver || (isResetting && (resetType === "game" || (resetType === "all" && wasGameOver)))) ? (
+          <>
+            <Button variant="game" size="lg" onClick={resetGame} disabled={isResetting} className="animate-pop-in">
+              <RotateCcw className={cn("w-5 h-5", (isResetting && resetType === "game") && "animate-spin")} strokeWidth={3} />
+              PLAY AGAIN
+            </Button>
+            <Button variant="outline" size="lg" onClick={resetAll} disabled={isResetting} className="animate-pop-in">
+              <Trash2 className={cn("w-5 h-5", (isResetting && resetType === "all") && "animate-trash-lid")} strokeWidth={3} />
+              RESET ALL
+            </Button>
+          </>
+        ) : (board.some(cell => cell !== null) || (isResetting && resetType === "draw")) ? (
+          <Button variant="game" size="lg" onClick={declareDraw} disabled={isResetting} className="animate-pop-in">
+            <Minus className={cn("w-5 h-5", (isResetting && resetType === "draw") && "animate-spin")} strokeWidth={3} />
+            DECLARE DRAW
+          </Button>
+        ) : (
+          <Button variant="outline" size="lg" onClick={resetAll} disabled={isResetting} className="animate-pop-in">
+            <Trash2 className={cn("w-5 h-5", (isResetting && resetType === "all") && "animate-trash-lid")} strokeWidth={3} />
+            RESET SCORES
+          </Button>
+        )}
       </div>
 
       {/* Manual Install Button */}

@@ -35,6 +35,8 @@ export const useTicTacToe = () => {
   });
 
   const [isResetting, setIsResetting] = useState(false);
+  const [resetType, setResetType] = useState<"game" | "all" | "draw" | null>(null);
+  const [wasGameOver, setWasGameOver] = useState(false);
 
   const checkWinner = useCallback((board: (string | null)[]) => {
     for (const combo of WINNING_COMBINATIONS) {
@@ -125,11 +127,15 @@ export const useTicTacToe = () => {
     });
   }, [checkWinner, checkDraw, isResetting]);
 
-  const clearBoardStaggered = useCallback(async (resetScores: boolean) => {
+  const clearBoardStaggered = useCallback(async (type: "game" | "all" | "draw") => {
     setIsResetting(true);
+    setResetType(type);
+    setWasGameOver(gameState.winner !== null || gameState.isDraw);
 
-    // Update scores immediately if it's a normal reset (abandoned game)
-    if (!resetScores) {
+    const resetScores = type === "all";
+
+    // Update draws immediately if it's a normal reset (abandoned game)
+    if (type === "draw") {
       setGameState(prev => {
         const isGameInProgress = prev.board.some((cell) => cell !== null) && !prev.winner && !prev.isDraw;
         return {
@@ -140,6 +146,15 @@ export const useTicTacToe = () => {
     }
 
     const boardResetPromise = (async () => {
+      const isBoardEmpty = gameState.board.every(cell => cell === null);
+
+      // If board is already empty and we're just resetting scores, 
+      // just wait a bit for the trash animation to play
+      if (isBoardEmpty && type === "all") {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return;
+      }
+
       for (let i = 0; i < 9; i++) {
         await new Promise(resolve => setTimeout(resolve, 50));
         setGameState(prev => {
@@ -157,7 +172,7 @@ export const useTicTacToe = () => {
         setGameState(prev => ({ ...prev, xWins: 0 }));
         await new Promise(resolve => setTimeout(resolve, 150));
         setGameState(prev => ({ ...prev, draws: 0 }));
-        await new Promise(resolve => setTimeout(resolve, 150));
+        await new Promise(resolve => setTimeout(resolve, 200));
         setGameState(prev => ({ ...prev, oWins: 0 }));
       }
     })();
@@ -174,14 +189,20 @@ export const useTicTacToe = () => {
     }));
 
     setIsResetting(false);
-  }, []);
+    setResetType(null);
+    setWasGameOver(false);
+  }, [gameState.winner, gameState.isDraw, gameState.board]);
 
   const resetGame = useCallback(() => {
-    clearBoardStaggered(false);
+    clearBoardStaggered("game");
   }, [clearBoardStaggered]);
 
   const resetAll = useCallback(() => {
-    clearBoardStaggered(true);
+    clearBoardStaggered("all");
+  }, [clearBoardStaggered]);
+
+  const declareDraw = useCallback(() => {
+    clearBoardStaggered("draw");
   }, [clearBoardStaggered]);
 
   return {
@@ -189,7 +210,10 @@ export const useTicTacToe = () => {
     handleCellClick,
     resetGame,
     resetAll,
+    declareDraw,
     isResetting,
+    resetType,
+    wasGameOver,
     gameOver: (gameState.winner !== null || gameState.isDraw) && !isResetting,
   };
 };

@@ -198,6 +198,30 @@
   }
 }
 
+@keyframes trash-lid {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  50% {
+    transform: translateY(-4px) rotate(-15deg);
+  }
+}
+
+.animate-trash-lid {
+  animation: trash-lid 0.5s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 2s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin 1s linear infinite reverse;
+}
+
 .animate-pop-in {
   animation: pop-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
