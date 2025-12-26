@@ -25,6 +25,7 @@ const Index = () => {
     isResetting,
     resetType,
     wasGameOver,
+    gameMode,
   } = useTicTacToe();
 
   const { deferredPrompt, install } = usePWAInstall();
@@ -47,6 +48,7 @@ const Index = () => {
           draws={draws}
           currentPlayer={currentPlayer}
           isDraw={isDraw}
+          gameMode={gameMode}
         />
 
         {/* Game Status */}

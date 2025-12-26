@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { XIcon, OIcon } from "./Icons";
+import { XIcon, OIcon, ComputerIcon, UserIcon } from "./Icons";
 import AnimatedScoreCard from "./AnimatedScoreCard";
 
 interface ScoreBoardProps {
@@ -8,9 +8,10 @@ interface ScoreBoardProps {
   draws: number;
   currentPlayer: "X" | "O";
   isDraw?: boolean;
+  gameMode: "human" | "computer";
 }
 
-const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw }: ScoreBoardProps) => {
+const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode }: ScoreBoardProps) => {
   return (
     <div className="flex justify-center gap-4 w-full max-w-sm">
       <AnimatedScoreCard
@@ -36,6 +37,15 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw }: ScoreBoardPr
         active={currentPlayer === "O" && !isDraw}
         activeClassName="glow-o"
       >
+        {/* Game Mode Icon - positioned relative to the card */}
+        <div className="absolute top-0.5 right-0.5 z-10">
+          {gameMode === "computer" ? (
+            <ComputerIcon className="w-8 h-8 text-o" />
+          ) : (
+            <UserIcon className="w-8 h-8 text-o" />
+          )}
+        </div>
+
         <OIcon className="w-8 h-8 text-o" />
         <div className="text-foreground text-2xl font-bold">{oWins}</div>
       </AnimatedScoreCard>

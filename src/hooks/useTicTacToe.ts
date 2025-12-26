@@ -22,6 +22,7 @@ interface GameState {
   xWins: number;
   oWins: number;
   draws: number;
+  gameMode: "human" | "computer";
 }
 
 const isValidGameState = (state: any): state is GameState => {
@@ -40,7 +41,9 @@ const isValidGameState = (state: any): state is GameState => {
     typeof state.isDraw === "boolean" &&
     Array.isArray(state.winningCells);
 
-  return validBoard && validPlayers && validStats;
+  const validGameMode = state.gameMode === "human" || state.gameMode === "computer";
+
+  return validBoard && validPlayers && validStats && validGameMode;
 };
 
 export const useTicTacToe = () => {
@@ -64,6 +67,7 @@ export const useTicTacToe = () => {
               xWins: parsed.xWins,
               oWins: parsed.oWins,
               draws: parsed.draws,
+              gameMode: parsed.gameMode,
             };
           }
 
@@ -84,6 +88,7 @@ export const useTicTacToe = () => {
       xWins: 0,
       oWins: 0,
       draws: 0,
+      gameMode: "human",
     };
   });
 

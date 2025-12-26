@@ -44,3 +44,85 @@ export const OIcon = ({ className, ...props }: IconProps) => {
         </svg>
     );
 };
+
+export const ComputerIcon = ({ className, ...props }: IconProps) => {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={cn("w-full h-full", className)}
+            {...props}
+        >
+            {/* Robot head */}
+            <rect
+                x="6"
+                y="7"
+                width="12"
+                height="6"
+                rx="2"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            {/* Left antenna */}
+            <line
+                x1="8"
+                y1="7"
+                x2="8"
+                y2="4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+            />
+            <circle cx="8" cy="4" r="0.8" fill="currentColor" />
+            {/* Right antenna */}
+            <line
+                x1="16"
+                y1="7"
+                x2="16"
+                y2="4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+            />
+            <circle cx="16" cy="4" r="0.8" fill="currentColor" />
+            {/* Eyes */}
+            <circle cx="9.5" cy="10" r="1" fill="currentColor" />
+            <circle cx="14.5" cy="10" r="1" fill="currentColor" />
+        </svg>
+    );
+};
+
+export const UserIcon = ({ className, ...props }: IconProps) => {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={cn("w-full h-full", className)}
+            {...props}
+        >
+            {/* Head */}
+            <circle
+                cx="12"
+                cy="8"
+                r="3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            {/* Body */}
+            <path
+                d="M6 19C6 16.2386 8.23858 14 11 14H13C15.7614 14 18 16.2386 18 19"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+};
+
