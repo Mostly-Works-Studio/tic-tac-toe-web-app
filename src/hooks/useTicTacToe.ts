@@ -50,6 +50,24 @@ export const useTicTacToe = () => {
       try {
         const parsed = JSON.parse(saved);
         if (isValidGameState(parsed)) {
+          // Check if the game was completed (has a winner or is a draw)
+          const isGameCompleted = parsed.winner !== null || parsed.isDraw;
+
+          if (isGameCompleted) {
+            // Clear the board but preserve scores
+            return {
+              board: Array(9).fill(null),
+              currentPlayer: "X",
+              winner: null,
+              winningCells: [],
+              isDraw: false,
+              xWins: parsed.xWins,
+              oWins: parsed.oWins,
+              draws: parsed.draws,
+            };
+          }
+
+          // Game is in progress, restore it completely
           return parsed;
         }
         console.warn("Saved game state is invalid, resetting...");
