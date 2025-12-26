@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { XIcon, OIcon, ComputerIcon, UserIcon } from "./Icons";
+import { XIcon, OIcon, BotIcon, UserIcon } from "./Icons";
 import AnimatedScoreCard from "./AnimatedScoreCard";
 import { useState, useEffect } from "react";
 
@@ -9,13 +9,14 @@ interface ScoreBoardProps {
   draws: number;
   currentPlayer: "X" | "O";
   isDraw?: boolean;
-  gameMode: "human" | "computer";
+  gameMode: "human" | "bot";
+  difficulty: "easy" | "medium" | "hard";
   canToggle: boolean;
   onToggleGameMode: () => void;
   onFlippingChange?: (isFlipping: boolean) => void;
 }
 
-const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, canToggle, onToggleGameMode, onFlippingChange }: ScoreBoardProps) => {
+const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, difficulty, canToggle, onToggleGameMode, onFlippingChange }: ScoreBoardProps) => {
   const [isFlipping, setIsFlipping] = useState(false);
 
   useEffect(() => {
@@ -69,10 +70,16 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, canT
         onClick={handleToggle}
         staticContent={
           <div className="absolute top-0.5 right-0.5 z-10">
-            {gameMode === "computer" ? (
-              <ComputerIcon className="w-8 h-8 text-o" />
+            {gameMode === "bot" ? (
+              <BotIcon
+                className="w-8 h-8"
+                style={{
+                  color: difficulty === "easy" ? "#4ADE80" :
+                    difficulty === "medium" ? "#FACC15" : "#D2190B"
+                }}
+              />
             ) : (
-              <UserIcon className="w-8 h-8 text-o" />
+              <UserIcon className="w-8 h-8 text-muted-foreground" />
             )}
           </div>
         }

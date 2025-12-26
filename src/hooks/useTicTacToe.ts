@@ -22,7 +22,7 @@ interface GameState {
   xWins: number;
   oWins: number;
   draws: number;
-  gameMode: "human" | "computer";
+  gameMode: "human" | "bot";
   difficulty: "easy" | "medium" | "hard";
 }
 
@@ -42,7 +42,7 @@ const isValidGameState = (state: any): state is GameState => {
     typeof state.isDraw === "boolean" &&
     Array.isArray(state.winningCells);
 
-  const validGameMode = state.gameMode === "human" || state.gameMode === "computer";
+  const validGameMode = state.gameMode === "human" || state.gameMode === "bot";
 
   return validBoard && validPlayers && validStats && validGameMode;
 };
@@ -90,7 +90,7 @@ export const useTicTacToe = () => {
       xWins: 0,
       oWins: 0,
       draws: 0,
-      gameMode: "human",
+      gameMode: "bot",
       difficulty: "medium",
     };
   });
@@ -155,7 +155,7 @@ export const useTicTacToe = () => {
 
     setGameState((prev) => {
       // Prevent user from clicking when it's bot's turn (but allow bot itself to move)
-      if (!isBotMove && prev.gameMode === "computer" && prev.currentPlayer === "O") {
+      if (!isBotMove && prev.gameMode === "bot" && prev.currentPlayer === "O") {
         return prev;
       }
 
@@ -286,12 +286,12 @@ export const useTicTacToe = () => {
   // Auto-play for bot
   useEffect(() => {
     // Only make bot move if:
-    // 1. Game mode is computer
+    // 1. Game mode is bot
     // 2. Current player is O (bot)
     // 3. Game is not over
     // 4. Not currently resetting
     if (
-      gameState.gameMode === "computer" &&
+      gameState.gameMode === "bot" &&
       gameState.currentPlayer === "O" &&
       !gameState.winner &&
       !gameState.isDraw &&
@@ -327,7 +327,7 @@ export const useTicTacToe = () => {
 
       // If only one cell is left and it's not the bot's turn, auto-fill it
       if (emptyCells.length === 1) {
-        const isBotTurn = gameState.gameMode === "computer" && gameState.currentPlayer === "O";
+        const isBotTurn = gameState.gameMode === "bot" && gameState.currentPlayer === "O";
 
         if (!isBotTurn) {
           const lastCellIndex = gameState.board.findIndex(cell => cell === null);
@@ -428,7 +428,7 @@ export const useTicTacToe = () => {
     if (isBoardEmpty) {
       setGameState(prev => ({
         ...prev,
-        gameMode: prev.gameMode === "human" ? "computer" : "human"
+        gameMode: prev.gameMode === "human" ? "bot" : "human"
       }));
     }
   }, [gameState.board]);

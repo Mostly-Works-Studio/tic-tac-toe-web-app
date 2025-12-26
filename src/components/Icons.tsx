@@ -45,7 +45,7 @@ export const OIcon = ({ className, ...props }: IconProps) => {
     );
 };
 
-export const ComputerIcon = ({ className, ...props }: IconProps) => {
+export const BotIcon = ({ className, ...props }: IconProps) => {
     return (
         <svg
             viewBox="0 0 24 24"

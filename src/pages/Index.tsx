@@ -27,6 +27,7 @@ const Index = () => {
     resetType,
     wasGameOver,
     gameMode,
+    difficulty,
     toggleGameMode,
     isBotMoving,
   } = useTicTacToe();
@@ -58,6 +59,7 @@ const Index = () => {
           currentPlayer={currentPlayer}
           isDraw={isDraw}
           gameMode={gameMode}
+          difficulty={difficulty}
           canToggle={canToggle}
           onToggleGameMode={toggleGameMode}
           onFlippingChange={setIsFlipping}
