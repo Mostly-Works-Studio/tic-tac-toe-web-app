@@ -224,7 +224,13 @@ export const useTicTacToe = () => {
       !gameState.isDraw &&
       !isResetting
     ) {
+      // Check if only one cell is left
+      const emptyCells = gameState.board.filter(cell => cell === null);
+      const isLastCell = emptyCells.length === 1;
+
       setIsBotMoving(true);
+      const delay = isLastCell ? 0 : 500; // No delay for last cell
+
       const timeoutId = setTimeout(() => {
         const botMoveIndex = getBotMove(gameState.board);
         if (botMoveIndex !== -1) {
@@ -235,11 +241,33 @@ export const useTicTacToe = () => {
             setIsBotMoving(false);
           }, 300);
         }
-      }, 500);
+      }, delay);
 
       return () => clearTimeout(timeoutId);
     }
   }, [gameState.gameMode, gameState.currentPlayer, gameState.winner, gameState.isDraw, gameState.board, isResetting, getBotMove, handleCellClick]);
+
+  // Auto-fill last cell for human players only (bot handles it via auto-play with 0ms delay)
+  useEffect(() => {
+    if (!gameState.winner && !gameState.isDraw && !isResetting) {
+      const emptyCells = gameState.board.filter(cell => cell === null);
+
+      // If only one cell is left and it's not the bot's turn, auto-fill it
+      if (emptyCells.length === 1) {
+        const isBotTurn = gameState.gameMode === "computer" && gameState.currentPlayer === "O";
+
+        if (!isBotTurn) {
+          const lastCellIndex = gameState.board.findIndex(cell => cell === null);
+          if (lastCellIndex !== -1) {
+            // Small delay to let previous move animation complete
+            setTimeout(() => {
+              handleCellClick(lastCellIndex, false);
+            }, 100);
+          }
+        }
+      }
+    }
+  }, [gameState.board, gameState.winner, gameState.isDraw, gameState.currentPlayer, gameState.gameMode, isResetting, handleCellClick]);
 
   const clearBoardStaggered = useCallback(async (type: "game" | "all" | "draw") => {
     setIsResetting(true);
