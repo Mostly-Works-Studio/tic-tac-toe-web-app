@@ -6,6 +6,7 @@ import GameStatus from "@/components/GameStatus";
 import { useTicTacToe } from "@/hooks/useTicTacToe";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 const Index = () => {
   const {
@@ -26,9 +27,17 @@ const Index = () => {
     resetType,
     wasGameOver,
     gameMode,
+    toggleGameMode,
+    isBotMoving,
   } = useTicTacToe();
 
   const { deferredPrompt, install } = usePWAInstall();
+
+  // Track flipping state from ScoreBoard
+  const [isFlipping, setIsFlipping] = useState(false);
+
+  // Can only toggle game mode when board is empty
+  const canToggle = board.every(cell => cell === null);
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col items-center p-4">
@@ -49,6 +58,9 @@ const Index = () => {
           currentPlayer={currentPlayer}
           isDraw={isDraw}
           gameMode={gameMode}
+          canToggle={canToggle}
+          onToggleGameMode={toggleGameMode}
+          onFlippingChange={setIsFlipping}
         />
 
         {/* Game Status */}
@@ -64,10 +76,11 @@ const Index = () => {
             board={board}
             onCellClick={handleCellClick}
             winningCells={winningCells}
-            gameOver={gameOver || isResetting}
+            gameOver={gameOver || isResetting || isFlipping}
             isDraw={isDraw}
             currentPlayer={currentPlayer}
             winner={winner}
+            isBotMoving={isBotMoving}
           />
         </div>
 

@@ -7,6 +7,8 @@ interface AnimatedScoreCardProps {
     className?: string;
     active?: boolean;
     activeClassName?: string;
+    onClick?: () => void;
+    staticContent?: ReactNode;
 }
 
 const AnimatedScoreCard = ({
@@ -14,7 +16,9 @@ const AnimatedScoreCard = ({
     children,
     className,
     active,
-    activeClassName
+    activeClassName,
+    onClick,
+    staticContent
 }: AnimatedScoreCardProps) => {
     const [animating, setAnimating] = useState(false);
     const prevValue = useRef(triggerValue);
@@ -41,11 +45,17 @@ const AnimatedScoreCard = ({
     }, [triggerValue, children]);
 
     return (
-        <div className={cn(
-            "flex-1 bg-card rounded-2xl p-4 text-center transition-all duration-300 flex flex-col items-center justify-center gap-2 relative overflow-hidden",
-            className,
-            active && activeClassName
-        )}>
+        <div
+            className={cn(
+                "flex-1 bg-card rounded-2xl p-4 text-center transition-all duration-300 flex flex-col items-center justify-center gap-2 relative overflow-hidden",
+                className,
+                active && activeClassName
+            )}
+            onClick={onClick}
+        >
+            {/* Static content that doesn't animate */}
+            {staticContent}
+
             {animating ? (
                 <div className="relative flex flex-col items-center justify-center">
                     {/* Old Content - Sliding Out */}

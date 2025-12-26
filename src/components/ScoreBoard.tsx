@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { XIcon, OIcon, ComputerIcon, UserIcon } from "./Icons";
 import AnimatedScoreCard from "./AnimatedScoreCard";
+import { useState, useEffect } from "react";
 
 interface ScoreBoardProps {
   xWins: number;
@@ -9,9 +10,34 @@ interface ScoreBoardProps {
   currentPlayer: "X" | "O";
   isDraw?: boolean;
   gameMode: "human" | "computer";
+  canToggle: boolean;
+  onToggleGameMode: () => void;
+  onFlippingChange?: (isFlipping: boolean) => void;
 }
 
-const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode }: ScoreBoardProps) => {
+const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, canToggle, onToggleGameMode, onFlippingChange }: ScoreBoardProps) => {
+  const [isFlipping, setIsFlipping] = useState(false);
+
+  useEffect(() => {
+    onFlippingChange?.(isFlipping);
+  }, [isFlipping, onFlippingChange]);
+
+  const handleToggle = () => {
+    if (!canToggle) return;
+
+    setIsFlipping(true);
+
+    // Change mode at 50% of animation (300ms) when card is edge-on
+    setTimeout(() => {
+      onToggleGameMode();
+    }, 300);
+
+    // Reset flip animation after it completes
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 600);
+  };
+
   return (
     <div className="flex justify-center gap-4 w-full max-w-sm">
       <AnimatedScoreCard
@@ -36,16 +62,21 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode }: Sc
         triggerValue={oWins}
         active={currentPlayer === "O" && !isDraw}
         activeClassName="glow-o"
+        className={cn(
+          isFlipping && "animate-flip",
+          canToggle && "cursor-pointer hover:scale-105 transition-transform duration-200"
+        )}
+        onClick={handleToggle}
+        staticContent={
+          <div className="absolute top-0.5 right-0.5 z-10">
+            {gameMode === "computer" ? (
+              <ComputerIcon className="w-8 h-8 text-o" />
+            ) : (
+              <UserIcon className="w-8 h-8 text-o" />
+            )}
+          </div>
+        }
       >
-        {/* Game Mode Icon - positioned relative to the card */}
-        <div className="absolute top-0.5 right-0.5 z-10">
-          {gameMode === "computer" ? (
-            <ComputerIcon className="w-8 h-8 text-o" />
-          ) : (
-            <UserIcon className="w-8 h-8 text-o" />
-          )}
-        </div>
-
         <OIcon className="w-8 h-8 text-o" />
         <div className="text-foreground text-2xl font-bold">{oWins}</div>
       </AnimatedScoreCard>

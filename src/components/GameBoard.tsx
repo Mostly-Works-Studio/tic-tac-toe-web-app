@@ -11,9 +11,10 @@ interface GameBoardProps {
   isDraw: boolean;
   currentPlayer: "X" | "O";
   winner: "X" | "O" | null;
+  isBotMoving?: boolean;
 }
 
-const GameBoard = ({ board, onCellClick, winningCells, gameOver, isDraw, currentPlayer, winner }: GameBoardProps) => {
+const GameBoard = ({ board, onCellClick, winningCells, gameOver, isDraw, currentPlayer, winner, isBotMoving = false }: GameBoardProps) => {
   return (
     <div className="relative">
       <div
@@ -29,7 +30,7 @@ const GameBoard = ({ board, onCellClick, winningCells, gameOver, isDraw, current
             value={cell as "X" | "O" | null}
             onClick={() => onCellClick(index)}
             isWinning={winningCells.includes(index)}
-            disabled={gameOver}
+            disabled={gameOver || isBotMoving}
             currentPlayer={currentPlayer}
           />
         ))}

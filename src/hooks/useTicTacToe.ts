@@ -99,6 +99,7 @@ export const useTicTacToe = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [resetType, setResetType] = useState<"game" | "all" | "draw" | null>(null);
   const [wasGameOver, setWasGameOver] = useState(false);
+  const [isBotMoving, setIsBotMoving] = useState(false);
 
   const checkWinner = useCallback((board: (string | null)[]) => {
     for (const combo of WINNING_COMBINATIONS) {
@@ -146,9 +147,15 @@ export const useTicTacToe = () => {
     return !canWin(board, currentPlayer);
   }, []);
 
-  const handleCellClick = useCallback((index: number) => {
+  const handleCellClick = useCallback((index: number, isBotMove = false) => {
     if (isResetting) return;
+
     setGameState((prev) => {
+      // Prevent user from clicking when it's bot's turn (but allow bot itself to move)
+      if (!isBotMove && prev.gameMode === "computer" && prev.currentPlayer === "O") {
+        return prev;
+      }
+
       if (prev.board[index] || prev.winner || prev.isDraw) {
         return prev;
       }
@@ -189,6 +196,51 @@ export const useTicTacToe = () => {
     });
   }, [checkWinner, checkDraw, isResetting]);
 
+  // Bot move selection (placeholder - will be replaced with AI logic)
+  const getBotMove = useCallback((board: (string | null)[]): number => {
+    // Placeholder: randomly select an empty cell
+    // TODO: Replace with AI logic based on difficulty level
+    const emptyCells = board
+      .map((cell, index) => (cell === null ? index : -1))
+      .filter(index => index !== -1);
+
+    if (emptyCells.length === 0) return -1;
+
+    const randomIndex = Math.floor(Math.random() * emptyCells.length);
+    return emptyCells[randomIndex];
+  }, []);
+
+  // Auto-play for bot
+  useEffect(() => {
+    // Only make bot move if:
+    // 1. Game mode is computer
+    // 2. Current player is O (bot)
+    // 3. Game is not over
+    // 4. Not currently resetting
+    if (
+      gameState.gameMode === "computer" &&
+      gameState.currentPlayer === "O" &&
+      !gameState.winner &&
+      !gameState.isDraw &&
+      !isResetting
+    ) {
+      setIsBotMoving(true);
+      const timeoutId = setTimeout(() => {
+        const botMoveIndex = getBotMove(gameState.board);
+        if (botMoveIndex !== -1) {
+          handleCellClick(botMoveIndex, true);
+
+          // Keep isBotMoving true for 300ms to let the pop-in animation complete
+          setTimeout(() => {
+            setIsBotMoving(false);
+          }, 300);
+        }
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [gameState.gameMode, gameState.currentPlayer, gameState.winner, gameState.isDraw, gameState.board, isResetting, getBotMove, handleCellClick]);
+
   const clearBoardStaggered = useCallback(async (type: "game" | "all" | "draw") => {
     setIsResetting(true);
     setResetType(type);
@@ -216,6 +268,9 @@ export const useTicTacToe = () => {
         await new Promise(resolve => setTimeout(resolve, 500));
         return;
       }
+
+      // Clear winning cells immediately to remove yellow glow
+      setGameState(prev => ({ ...prev, winningCells: [] }));
 
       for (let i = 0; i < 9; i++) {
         await new Promise(resolve => setTimeout(resolve, 50));
@@ -267,15 +322,27 @@ export const useTicTacToe = () => {
     clearBoardStaggered("draw");
   }, [clearBoardStaggered]);
 
+  const toggleGameMode = useCallback(() => {
+    const isBoardEmpty = gameState.board.every(cell => cell === null);
+    if (isBoardEmpty) {
+      setGameState(prev => ({
+        ...prev,
+        gameMode: prev.gameMode === "human" ? "computer" : "human"
+      }));
+    }
+  }, [gameState.board]);
+
   return {
     ...gameState,
     handleCellClick,
     resetGame,
     resetAll,
     declareDraw,
+    toggleGameMode,
     isResetting,
     resetType,
     wasGameOver,
+    isBotMoving,
     gameOver: (gameState.winner !== null || gameState.isDraw) && !isResetting,
   };
 };

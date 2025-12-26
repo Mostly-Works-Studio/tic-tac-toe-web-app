@@ -10,6 +10,8 @@ interface GameCellProps {
 }
 
 const GameCell = ({ value, onClick, isWinning, disabled, currentPlayer }: GameCellProps) => {
+  const showHover = !value && !disabled;
+
   return (
     <button
       onClick={onClick}
@@ -19,7 +21,7 @@ const GameCell = ({ value, onClick, isWinning, disabled, currentPlayer }: GameCe
         value === "X" && "game-cell-x",
         value === "O" && "game-cell-o",
         isWinning && "win-cell",
-        !value && !disabled && "hover:scale-[1.02]"
+        showHover && "hover:scale-[1.02]"
       )}
     >
       {value === "X" && (
@@ -37,13 +39,13 @@ const GameCell = ({ value, onClick, isWinning, disabled, currentPlayer }: GameCe
         />
       )}
 
-      {/* Hover Hint */}
-      {!value && !disabled && currentPlayer === "X" && (
+      {/* Hover Hint - only show when not bot's turn */}
+      {showHover && currentPlayer === "X" && (
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-20 transition-opacity duration-200">
           <XIcon className="w-12 h-12 sm:w-16 sm:h-16" />
         </div>
       )}
-      {!value && !disabled && currentPlayer === "O" && (
+      {showHover && currentPlayer === "O" && (
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-20 transition-opacity duration-200">
           <OIcon className="w-12 h-12 sm:w-16 sm:h-16" />
         </div>

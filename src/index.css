@@ -290,3 +290,21 @@
 .animate-stamp {
   animation: stamp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
+
+@keyframes flip-card {
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  50% {
+    transform: rotateX(90deg);
+  }
+
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+.animate-flip {
+  animation: flip-card 600ms ease-in-out;
+}
