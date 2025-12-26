@@ -262,7 +262,7 @@ export const useTicTacToe = () => {
             // Small delay to let previous move animation complete
             setTimeout(() => {
               handleCellClick(lastCellIndex, false);
-            }, 100);
+            }, 300);
           }
         }
       }
