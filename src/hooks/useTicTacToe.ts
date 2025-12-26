@@ -23,6 +23,7 @@ interface GameState {
   oWins: number;
   draws: number;
   gameMode: "human" | "computer";
+  difficulty: "easy" | "medium" | "hard";
 }
 
 const isValidGameState = (state: any): state is GameState => {
@@ -68,6 +69,7 @@ export const useTicTacToe = () => {
               oWins: parsed.oWins,
               draws: parsed.draws,
               gameMode: parsed.gameMode,
+              difficulty: parsed.difficulty || "medium",
             };
           }
 
@@ -89,6 +91,7 @@ export const useTicTacToe = () => {
       oWins: 0,
       draws: 0,
       gameMode: "human",
+      difficulty: "medium",
     };
   });
 
@@ -196,19 +199,89 @@ export const useTicTacToe = () => {
     });
   }, [checkWinner, checkDraw, isResetting]);
 
-  // Bot move selection (placeholder - will be replaced with AI logic)
-  const getBotMove = useCallback((board: (string | null)[]): number => {
-    // Placeholder: randomly select an empty cell
-    // TODO: Replace with AI logic based on difficulty level
+  // Minimax algorithm for optimal bot moves
+  const minimax = useCallback((board: (string | null)[], isMaximizing: boolean): number => {
+    // Check terminal states
+    const result = checkWinner(board);
+    if (result) {
+      return result.winner === "O" ? 10 : -10;
+    }
+
+    const isDraw = board.every(cell => cell !== null);
+    if (isDraw) return 0;
+
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === null) {
+          board[i] = "O";
+          const score = minimax(board, false);
+          board[i] = null;
+          bestScore = Math.max(score, bestScore);
+        }
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === null) {
+          board[i] = "X";
+          const score = minimax(board, true);
+          board[i] = null;
+          bestScore = Math.min(score, bestScore);
+        }
+      }
+      return bestScore;
+    }
+  }, [checkWinner]);
+
+  // Find the best move using minimax
+  const getBestMove = useCallback((board: (string | null)[]): number => {
+    let bestScore = -Infinity;
+    let bestMove = -1;
+
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === null) {
+        board[i] = "O";
+        const score = minimax(board, false);
+        board[i] = null;
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = i;
+        }
+      }
+    }
+
+    return bestMove;
+  }, [minimax]);
+
+  // Bot move selection based on difficulty level
+  const getBotMove = useCallback((board: (string | null)[], difficulty: "easy" | "medium" | "hard"): number => {
     const emptyCells = board
       .map((cell, index) => (cell === null ? index : -1))
       .filter(index => index !== -1);
 
     if (emptyCells.length === 0) return -1;
 
-    const randomIndex = Math.floor(Math.random() * emptyCells.length);
-    return emptyCells[randomIndex];
-  }, []);
+    // Helper to get random move
+    const getRandomMove = () => {
+      const randomIndex = Math.floor(Math.random() * emptyCells.length);
+      return emptyCells[randomIndex];
+    };
+
+    // Determine optimal move probability based on difficulty
+    const optimalProbability = {
+      easy: 0.3,      // 30% optimal, 70% random
+      medium: 0.5,  // 50% optimal, 50% random
+      hard: 0.80,   // 80% optimal, 20% random
+    }[difficulty];
+
+    // Use optimal move based on probability
+    const useOptimal = Math.random() < optimalProbability;
+    return useOptimal ? getBestMove(board) : getRandomMove();
+  }, [getBestMove]);
+
 
   // Auto-play for bot
   useEffect(() => {
@@ -232,7 +305,7 @@ export const useTicTacToe = () => {
       const delay = isLastCell ? 0 : 500; // No delay for last cell
 
       const timeoutId = setTimeout(() => {
-        const botMoveIndex = getBotMove(gameState.board);
+        const botMoveIndex = getBotMove(gameState.board, gameState.difficulty);
         if (botMoveIndex !== -1) {
           handleCellClick(botMoveIndex, true);
 
