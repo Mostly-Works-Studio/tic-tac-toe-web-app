@@ -53,7 +53,7 @@ const AnimatedScoreCard = ({
     return (
         <div
             className={cn(
-                "flex-1 bg-card rounded-2xl p-4 text-center transition-all duration-300 flex flex-col items-center justify-center gap-2 relative overflow-hidden",
+                "flex-1 bg-card rounded-2xl p-4 text-center transition-all duration-300 flex flex-col items-center justify-center gap-2 relative overflow-hidden select-none",
                 className,
                 active && activeClassName
             )}

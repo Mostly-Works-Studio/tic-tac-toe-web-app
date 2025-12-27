@@ -72,7 +72,7 @@ const DifficultyMenu = ({ position, currentDifficulty, onSelect, onClose }: Diff
                         onClose();
                     }}
                     className={cn(
-                        "w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-white/10 transition-colors",
+                        "w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-white/10 transition-colors select-none",
                         currentDifficulty === diff.value && "bg-white/10",
                         index === 0 && "rounded-t-lg",
                         index === difficulties.length - 1 && "rounded-b-lg",
