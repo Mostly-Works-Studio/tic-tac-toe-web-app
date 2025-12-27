@@ -124,7 +124,7 @@ const Index = () => {
       </div>
 
       {/* Branding Footer */}
-      <footer className="pt-4 pb-2 text-center text-sm text-muted-foreground">
+      <footer className="pt-4 pb-2 text-center text-sm text-muted-foreground select-none">
         Made with ❤ by Mostly Works Studio
       </footer>
     </div>
