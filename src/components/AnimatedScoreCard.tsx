@@ -7,7 +7,10 @@ interface AnimatedScoreCardProps {
     className?: string;
     active?: boolean;
     activeClassName?: string;
-    onClick?: () => void;
+    onClick?: (e?: React.MouseEvent) => void;
+    onContextMenu?: (e: React.MouseEvent) => void;
+    onTouchStart?: (e: React.TouchEvent) => void;
+    onTouchEnd?: () => void;
     staticContent?: ReactNode;
 }
 
@@ -18,6 +21,9 @@ const AnimatedScoreCard = ({
     active,
     activeClassName,
     onClick,
+    onContextMenu,
+    onTouchStart,
+    onTouchEnd,
     staticContent
 }: AnimatedScoreCardProps) => {
     const [animating, setAnimating] = useState(false);
@@ -51,7 +57,10 @@ const AnimatedScoreCard = ({
                 className,
                 active && activeClassName
             )}
-            onClick={onClick}
+            onClick={(e) => onClick?.(e)}
+            onContextMenu={onContextMenu}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
         >
             {/* Static content that doesn't animate */}
             {staticContent}

@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
 import { XIcon, OIcon, BotIcon, UserIcon } from "./Icons";
 import AnimatedScoreCard from "./AnimatedScoreCard";
-import { useState, useEffect } from "react";
+import DifficultyMenu from "./DifficultyMenu";
+import { useState, useEffect, useRef } from "react";
 
 interface ScoreBoardProps {
   xWins: number;
@@ -13,11 +14,15 @@ interface ScoreBoardProps {
   difficulty: "easy" | "medium" | "hard";
   canToggle: boolean;
   onToggleGameMode: () => void;
+  onSetDifficulty: (difficulty: "easy" | "medium" | "hard") => void;
   onFlippingChange?: (isFlipping: boolean) => void;
 }
 
-const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, difficulty, canToggle, onToggleGameMode, onFlippingChange }: ScoreBoardProps) => {
+const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, difficulty, canToggle, onToggleGameMode, onSetDifficulty, onFlippingChange }: ScoreBoardProps) => {
   const [isFlipping, setIsFlipping] = useState(false);
+  const [showDifficultyMenu, setShowDifficultyMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     onFlippingChange?.(isFlipping);
@@ -37,6 +42,32 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, diff
     setTimeout(() => {
       setIsFlipping(false);
     }, 600);
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (gameMode === "bot") {
+      e.preventDefault();
+      setMenuPosition({ x: e.clientX, y: e.clientY });
+      setShowDifficultyMenu(true);
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (gameMode !== "bot") return;
+
+    // Long press detection
+    longPressTimerRef.current = setTimeout(() => {
+      const touch = e.touches[0];
+      setMenuPosition({ x: touch.clientX, y: touch.clientY });
+      setShowDifficultyMenu(true);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
   };
 
   return (
@@ -68,6 +99,9 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, diff
           canToggle && "cursor-pointer hover:scale-105 transition-transform duration-200"
         )}
         onClick={handleToggle}
+        onContextMenu={handleContextMenu}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         staticContent={
           <div className="absolute top-0.5 right-0.5 z-10">
             {gameMode === "bot" ? (
@@ -87,6 +121,15 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, diff
         <OIcon className="w-8 h-8 text-o" />
         <div className="text-foreground text-2xl font-bold">{oWins}</div>
       </AnimatedScoreCard>
+
+      {showDifficultyMenu && (
+        <DifficultyMenu
+          position={menuPosition}
+          currentDifficulty={difficulty}
+          onSelect={onSetDifficulty}
+          onClose={() => setShowDifficultyMenu(false)}
+        />
+      )}
     </div>
   );
 };

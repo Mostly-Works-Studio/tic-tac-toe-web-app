@@ -433,6 +433,13 @@ export const useTicTacToe = () => {
     }
   }, [gameState.board]);
 
+  const setDifficulty = useCallback((difficulty: "easy" | "medium" | "hard") => {
+    setGameState(prev => ({
+      ...prev,
+      difficulty
+    }));
+  }, []);
+
   return {
     ...gameState,
     handleCellClick,
@@ -440,6 +447,7 @@ export const useTicTacToe = () => {
     resetAll,
     declareDraw,
     toggleGameMode,
+    setDifficulty,
     isResetting,
     resetType,
     wasGameOver,
