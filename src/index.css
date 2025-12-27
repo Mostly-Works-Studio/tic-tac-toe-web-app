@@ -47,9 +47,13 @@
     /* #FB7185 */
     --cell-bg: 211 51% 16%;
     --cell-hover: 211 51% 20%;
+    /* ScoreBoard glow */
     --glow-x: 0 0 35px hsl(188 86% 53% / 0.8);
     --glow-o: 0 0 35px hsl(351 95% 71% / 0.8);
-    --win-glow: 0 0 50px hsl(48 100% 60% / 0.9);
+    /* Grid cell glow */
+    --grid-glow-x: 0 0 15px 3px hsl(188 86% 53% / 0.8);
+    --grid-glow-o: 0 0 15px 3px hsl(351 95% 71% / 0.8);
+    --win-glow: 0 0 20px hsl(48 100% 60% / 0.9);
   }
 
   .dark {
@@ -125,11 +129,13 @@
   }
 
   .game-cell-x {
-    @apply text-x glow-x;
+    @apply text-x;
+    box-shadow: var(--grid-glow-x);
   }
 
   .game-cell-o {
-    @apply text-o glow-o;
+    @apply text-o;
+    box-shadow: var(--grid-glow-o);
   }
 
   .game-cell:disabled.win-cell {
