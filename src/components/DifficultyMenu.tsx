@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface DifficultyMenuProps {
@@ -10,6 +10,8 @@ interface DifficultyMenuProps {
 
 const DifficultyMenu = ({ position, currentDifficulty, onSelect, onClose }: DifficultyMenuProps) => {
     const menuRef = useRef<HTMLDivElement>(null);
+    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+    const [canHover, setCanHover] = useState(false);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -54,6 +56,19 @@ const DifficultyMenu = ({ position, currentDifficulty, onSelect, onClose }: Diff
         { value: "hard", label: "Hard", color: "#D2190B" },
     ];
 
+    // Handle pointer enter to detect if device supports hover
+    const handlePointerEnter = (e: React.PointerEvent, value: string) => {
+        // Enable hover for mouse and pen/stylus, but not for touch
+        if (e.pointerType === "mouse" || e.pointerType === "pen") {
+            setCanHover(true);
+            setHoveredItem(value);
+        }
+    };
+
+    const handlePointerLeave = () => {
+        setHoveredItem(null);
+    };
+
     return (
         <div
             ref={menuRef}
@@ -71,9 +86,12 @@ const DifficultyMenu = ({ position, currentDifficulty, onSelect, onClose }: Diff
                         onSelect(diff.value);
                         onClose();
                     }}
+                    onPointerEnter={(e) => handlePointerEnter(e, diff.value)}
+                    onPointerLeave={handlePointerLeave}
                     className={cn(
-                        "w-full px-4 py-2 text-left flex items-center gap-2 [@media(any-hover:hover)]:hover:bg-white/10 transition-colors select-none",
+                        "w-full px-4 py-2 text-left flex items-center gap-2 transition-colors select-none",
                         currentDifficulty === diff.value && "bg-white/10",
+                        canHover && hoveredItem === diff.value && "bg-white/10",
                         index === 0 && "rounded-t-lg",
                         index === difficulties.length - 1 && "rounded-b-lg",
                         index !== difficulties.length - 1 && (
