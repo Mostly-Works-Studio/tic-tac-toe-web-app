@@ -24,6 +24,7 @@ interface GameState {
   draws: number;
   gameMode: "human" | "bot";
   difficulty: "easy" | "medium" | "hard";
+  isGameStarted: boolean;
 }
 
 const isValidGameState = (state: any): state is GameState => {
@@ -40,6 +41,7 @@ const isValidGameState = (state: any): state is GameState => {
     typeof state.oWins === "number" &&
     typeof state.draws === "number" &&
     typeof state.isDraw === "boolean" &&
+    typeof state.isGameStarted === "boolean" &&
     Array.isArray(state.winningCells);
 
   const validGameMode = state.gameMode === "human" || state.gameMode === "bot";
@@ -70,6 +72,7 @@ export const useTicTacToe = () => {
               draws: parsed.draws,
               gameMode: parsed.gameMode,
               difficulty: parsed.difficulty || "medium",
+              isGameStarted: false,
             };
           }
 
@@ -92,6 +95,7 @@ export const useTicTacToe = () => {
       draws: 0,
       gameMode: "bot",
       difficulty: "medium",
+      isGameStarted: false,
     };
   });
 
@@ -100,9 +104,11 @@ export const useTicTacToe = () => {
   }, [gameState]);
 
   const [isResetting, setIsResetting] = useState(false);
-  const [resetType, setResetType] = useState<"game" | "all" | "draw" | null>(null);
+  const [resetType, setResetType] = useState<"game" | "all" | "resign" | null>(null);
   const [wasGameOver, setWasGameOver] = useState(false);
   const [isBotMoving, setIsBotMoving] = useState(false);
+  const [isTossing, setIsTossing] = useState(false);
+  const [tossWinner, setTossWinner] = useState<"X" | "O" | null>(null);
 
   const checkWinner = useCallback((board: (string | null)[]) => {
     for (const combo of WINNING_COMBINATIONS) {
@@ -342,22 +348,31 @@ export const useTicTacToe = () => {
     }
   }, [gameState.board, gameState.winner, gameState.isDraw, gameState.currentPlayer, gameState.gameMode, isResetting, handleCellClick]);
 
-  const clearBoardStaggered = useCallback(async (type: "game" | "all" | "draw") => {
+  const clearBoardStaggered = useCallback(async (type: "game" | "all" | "resign") => {
     setIsResetting(true);
     setResetType(type);
     setWasGameOver(gameState.winner !== null || gameState.isDraw);
 
     const resetScores = type === "all";
 
-    // Update draws immediately if it's a normal reset (abandoned game)
-    if (type === "draw") {
+    // Award win to opponent when resigning
+    if (type === "resign") {
       setGameState(prev => {
-        const isGameInProgress = prev.board.some((cell) => cell !== null) && !prev.winner && !prev.isDraw;
-        return {
-          ...prev,
-          draws: isGameInProgress ? prev.draws + 1 : prev.draws,
-        };
+        // Only allow resign if game has started and there's no winner yet
+        if (prev.isGameStarted && !prev.winner && !prev.isDraw) {
+          const opponent = prev.currentPlayer === "X" ? "O" : "X";
+          return {
+            ...prev,
+            winner: opponent,
+            xWins: opponent === "X" ? prev.xWins + 1 : prev.xWins,
+            oWins: opponent === "O" ? prev.oWins + 1 : prev.oWins,
+          };
+        }
+        return prev;
       });
+
+      // Wait 1.5 seconds to show the winner stamp before clearing
+      await new Promise(resolve => setTimeout(resolve, 1500));
     }
 
     const boardResetPromise = (async () => {
@@ -404,11 +419,21 @@ export const useTicTacToe = () => {
       winner: null,
       winningCells: [],
       isDraw: false,
+      isGameStarted: false,
     }));
 
     setIsResetting(false);
     setResetType(null);
     setWasGameOver(false);
+
+    // Auto-start toss when Play Again is clicked
+    if (type === "game") {
+      // Small delay to let the reset animation complete
+      setTimeout(() => {
+        startGame();
+      }, 100);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.winner, gameState.isDraw, gameState.board]);
 
   const resetGame = useCallback(() => {
@@ -419,19 +444,16 @@ export const useTicTacToe = () => {
     clearBoardStaggered("all");
   }, [clearBoardStaggered]);
 
-  const declareDraw = useCallback(() => {
-    clearBoardStaggered("draw");
+  const resign = useCallback(() => {
+    clearBoardStaggered("resign");
   }, [clearBoardStaggered]);
 
   const toggleGameMode = useCallback(() => {
-    const isBoardEmpty = gameState.board.every(cell => cell === null);
-    if (isBoardEmpty) {
-      setGameState(prev => ({
-        ...prev,
-        gameMode: prev.gameMode === "human" ? "bot" : "human"
-      }));
-    }
-  }, [gameState.board]);
+    setGameState(prev => ({
+      ...prev,
+      gameMode: prev.gameMode === "human" ? "bot" : "human"
+    }));
+  }, []);
 
   const setDifficulty = useCallback((difficulty: "easy" | "medium" | "hard") => {
     setGameState(prev => ({
@@ -440,18 +462,47 @@ export const useTicTacToe = () => {
     }));
   }, []);
 
+  const startGame = useCallback(async () => {
+    // Start slot machine animation
+    setIsTossing(true);
+
+    // Wait for slot machine animation (1300ms)
+    await new Promise(resolve => setTimeout(resolve, 1300));
+
+    // Randomly select first player (50/50 chance)
+    const firstPlayer = Math.random() < 0.5 ? "X" : "O";
+
+    // Stop tossing and show winner
+    setIsTossing(false);
+    setTossWinner(firstPlayer);
+
+    // Wait to display winner symbol (1600ms)
+    await new Promise(resolve => setTimeout(resolve, 1600));
+
+    // Clear winner and start game
+    setTossWinner(null);
+    setGameState(prev => ({
+      ...prev,
+      currentPlayer: firstPlayer,
+      isGameStarted: true,
+    }));
+  }, []);
+
   return {
     ...gameState,
     handleCellClick,
     resetGame,
     resetAll,
-    declareDraw,
+    resign,
     toggleGameMode,
     setDifficulty,
+    startGame,
     isResetting,
     resetType,
     wasGameOver,
     isBotMoving,
+    isTossing,
+    tossWinner,
     gameOver: (gameState.winner !== null || gameState.isDraw) && !isResetting,
   };
 };

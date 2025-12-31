@@ -8,7 +8,7 @@ interface ScoreBoardProps {
   xWins: number;
   oWins: number;
   draws: number;
-  currentPlayer: "X" | "O";
+  currentPlayer: "X" | "O" | null;
   isDraw?: boolean;
   gameMode: "human" | "bot";
   difficulty: "easy" | "medium" | "hard";
@@ -45,7 +45,7 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, diff
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    if (gameMode === "bot") {
+    if (gameMode === "bot" && canToggle) {
       e.preventDefault();
       setMenuPosition({ x: e.clientX, y: e.clientY });
       setShowDifficultyMenu(true);
@@ -53,7 +53,7 @@ const ScoreBoard = ({ xWins, oWins, draws, currentPlayer, isDraw, gameMode, diff
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (gameMode !== "bot") return;
+    if (gameMode !== "bot" || !canToggle) return;
 
     // Long press detection
     longPressTimerRef.current = setTimeout(() => {

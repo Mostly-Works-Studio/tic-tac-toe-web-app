@@ -1,4 +1,4 @@
-import { RotateCcw, Trash2, Download, Minus } from "lucide-react";
+import { RotateCcw, Trash2, Download, Minus, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GameBoard from "@/components/GameBoard";
 import ScoreBoard from "@/components/ScoreBoard";
@@ -21,7 +21,7 @@ const Index = () => {
     handleCellClick,
     resetGame,
     resetAll,
-    declareDraw,
+    resign,
     gameOver,
     isResetting,
     resetType,
@@ -31,6 +31,10 @@ const Index = () => {
     toggleGameMode,
     setDifficulty,
     isBotMoving,
+    startGame,
+    isGameStarted,
+    isTossing,
+    tossWinner,
   } = useTicTacToe();
 
   const { deferredPrompt, install } = usePWAInstall();
@@ -38,8 +42,8 @@ const Index = () => {
   // Track flipping state from ScoreBoard
   const [isFlipping, setIsFlipping] = useState(false);
 
-  // Can only toggle game mode when board is empty
-  const canToggle = board.every(cell => cell === null);
+  // Can only toggle game mode and difficulty when game hasn't started or when game is over (but not during toss)
+  const canToggle = (!isGameStarted || gameOver) && !isTossing && !tossWinner;
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col items-center p-4">
@@ -57,7 +61,7 @@ const Index = () => {
           xWins={xWins}
           oWins={oWins}
           draws={draws}
-          currentPlayer={currentPlayer}
+          currentPlayer={isGameStarted ? currentPlayer : null}
           isDraw={isDraw}
           gameMode={gameMode}
           difficulty={difficulty}
@@ -71,7 +75,9 @@ const Index = () => {
         <GameStatus
           winner={winner}
           isDraw={isDraw}
-          currentPlayer={currentPlayer}
+          currentPlayer={isGameStarted ? currentPlayer : null}
+          isTossing={isTossing}
+          tossWinner={tossWinner}
         />
 
         {/* Game Board */}
@@ -80,16 +86,18 @@ const Index = () => {
             board={board}
             onCellClick={handleCellClick}
             winningCells={winningCells}
-            gameOver={gameOver || isResetting || isFlipping}
+            gameOver={gameOver || isResetting || isFlipping || !isGameStarted}
             isDraw={isDraw}
             currentPlayer={currentPlayer}
             winner={winner}
             isBotMoving={isBotMoving}
+            isTossing={isTossing}
+            tossWinner={tossWinner}
           />
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 h-14">
+        <div className="flex flex-col gap-3 w-full max-w-sm min-h-[128px]">
           {(gameOver || (isResetting && (resetType === "game" || (resetType === "all" && wasGameOver)))) ? (
             <>
               <Button variant="game" size="lg" onClick={resetGame} disabled={isResetting} className="animate-pop-in">
@@ -101,16 +109,43 @@ const Index = () => {
                 RESET ALL
               </Button>
             </>
-          ) : (board.some(cell => cell !== null) || (isResetting && resetType === "draw")) ? (
-            <Button variant="game" size="lg" onClick={declareDraw} disabled={isResetting} className="animate-pop-in">
-              <Minus className={cn("w-5 h-5", (isResetting && resetType === "draw") && "animate-spin")} strokeWidth={3} />
-              DECLARE DRAW
+          ) : (isGameStarted || (isResetting && resetType === "resign")) ? (
+            <Button
+              variant="game"
+              size="lg"
+              onClick={resign}
+              disabled={isResetting || isBotMoving || (gameMode === "bot" && currentPlayer === "O")}
+              className={cn(
+                "animate-pop-in",
+                (isResetting || isBotMoving || (gameMode === "bot" && currentPlayer === "O")) && "!opacity-50 cursor-not-allowed"
+              )}
+            >
+              <Minus className={cn("w-5 h-5", (isResetting && resetType === "resign") && "animate-spin")} strokeWidth={3} />
+              RESIGN
             </Button>
           ) : (
-            <Button variant="outline" size="lg" onClick={resetAll} disabled={isResetting} className="animate-pop-in">
-              <Trash2 className={cn("w-5 h-5", (isResetting && resetType === "all") && "animate-trash-lid")} strokeWidth={3} />
-              RESET SCORES
-            </Button>
+            <>
+              <Button
+                variant="game"
+                size="lg"
+                onClick={startGame}
+                disabled={isTossing || !!tossWinner}
+                className={cn("animate-pop-in", (isTossing || tossWinner) && "!opacity-50 cursor-not-allowed")}
+              >
+                <Play className="w-5 h-5" strokeWidth={3} />
+                TOSS & START
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={resetAll}
+                disabled={isResetting || isTossing || !!tossWinner}
+                className={cn("animate-pop-in", (isResetting || isTossing || tossWinner) && "!opacity-50 cursor-not-allowed")}
+              >
+                <Trash2 className={cn("w-5 h-5", (isResetting && resetType === "all") && "animate-trash-lid")} strokeWidth={3} />
+                RESET SCORES
+              </Button>
+            </>
           )}
         </div>
 

@@ -7,9 +7,10 @@ interface GameCellProps {
   isWinning: boolean;
   disabled: boolean;
   currentPlayer?: "X" | "O";
+  className?: string;
 }
 
-const GameCell = ({ value, onClick, isWinning, disabled, currentPlayer }: GameCellProps) => {
+const GameCell = ({ value, onClick, isWinning, disabled, currentPlayer, className }: GameCellProps) => {
   const showHover = !value && !disabled;
 
   return (
@@ -21,7 +22,8 @@ const GameCell = ({ value, onClick, isWinning, disabled, currentPlayer }: GameCe
         value === "X" && "game-cell-x",
         value === "O" && "game-cell-o",
         isWinning && "win-cell",
-        showHover && "hover:scale-[1.02]"
+        showHover && "hover:scale-[1.02]",
+        className
       )}
     >
       {value === "X" && (
