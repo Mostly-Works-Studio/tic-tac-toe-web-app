@@ -276,6 +276,11 @@ export const useTicTacToe = () => {
       return emptyCells[randomIndex];
     };
 
+    // If board is completely empty (first move), always make a random move
+    if (emptyCells.length === 9) {
+      return getRandomMove();
+    }
+
     // Determine optimal move probability based on difficulty
     const optimalProbability = {
       easy: 0.3,      // 30% optimal, 70% random
