@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import GameBoard from "@/components/GameBoard";
 import ScoreBoard from "@/components/ScoreBoard";
 import GameStatus from "@/components/GameStatus";
+import { GameMenu } from "@/components/GameMenu";
+import { HowToPlayDialog } from "@/components/HowToPlayDialog";
+import { AboutDialog } from "@/components/AboutDialog";
 import { useTicTacToe } from "@/hooks/useTicTacToe";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { cn } from "@/lib/utils";
@@ -42,6 +45,10 @@ const Index = () => {
   // Track flipping state from ScoreBoard
   const [isFlipping, setIsFlipping] = useState(false);
 
+  // Dialog states
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+
   // Can only toggle game mode and difficulty when game hasn't started or when game is over (but not during toss)
   const canToggle = (!isGameStarted || gameOver) && !isTossing && !tossWinner;
 
@@ -49,12 +56,21 @@ const Index = () => {
     <div className="min-h-[100dvh] bg-background flex flex-col items-center p-4">
       {/* Main Game Content - Centered */}
       <div className="flex-1 flex flex-col items-center justify-center gap-6 w-full">
-        {/* Title */}
-        <h1 className="text-4xl font-extrabold tracking-tight">
-          <span className="text-x">Tic</span>
-          <span className="text-foreground"> Tac </span>
-          <span className="text-o">Toe</span>
-        </h1>
+        {/* Title with Menu */}
+        <div className="flex items-center gap-3 w-full max-w-sm">
+          <div className="flex-1" />
+          <h1 className="text-4xl font-extrabold tracking-tight">
+            <span className="text-x">Tic</span>
+            <span className="text-foreground"> Tac </span>
+            <span className="text-o">Toe</span>
+          </h1>
+          <div className="flex-1 flex justify-end">
+            <GameMenu
+              onHowToPlay={() => setShowHowToPlay(true)}
+              onAbout={() => setShowAbout(true)}
+            />
+          </div>
+        </div>
 
         {/* Score Board */}
         <ScoreBoard
@@ -162,6 +178,10 @@ const Index = () => {
       <footer className="pt-4 pb-2 text-center text-sm text-muted-foreground select-none">
         Made with ❤ by Mostly Works Studio
       </footer>
+
+      {/* Dialogs */}
+      <HowToPlayDialog open={showHowToPlay} onOpenChange={setShowHowToPlay} />
+      <AboutDialog open={showAbout} onOpenChange={setShowAbout} />
     </div>
   );
 };
