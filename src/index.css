@@ -84,8 +84,16 @@
     @apply border-border;
   }
 
+  html {
+    overflow: hidden;
+    height: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-outfit;
+    overflow: auto;
+    height: 100%;
+    overscroll-behavior: none;
   }
 
   /* Custom narrow scrollbar */
