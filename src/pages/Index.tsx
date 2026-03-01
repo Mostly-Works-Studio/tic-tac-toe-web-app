@@ -1,3 +1,5 @@
+"use client";
+
 import { RotateCcw, Trash2, Download, Minus, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GameBoard from "@/components/GameBoard";

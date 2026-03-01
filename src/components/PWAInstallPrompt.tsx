@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Share, PlusSquare, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";

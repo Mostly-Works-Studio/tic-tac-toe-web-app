@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useCallback, useEffect } from "react";
 
 const STORAGE_KEY = "tic-tac-toe-state";

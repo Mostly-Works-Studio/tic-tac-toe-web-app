@@ -1,3 +1,10 @@
+# Next.js build output
+.next/
+out/
+
+# pnpm
+pnpm-lock.yaml
+
 # Logs
 logs
 *.log
